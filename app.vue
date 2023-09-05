@@ -1,6 +1,6 @@
 <template>
   <main class="game-main">
-    <game-canvas />
+    <game />
   </main>
 </template>
 
