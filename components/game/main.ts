@@ -1,4 +1,6 @@
-const useGame = () => {
+import { Sprite } from "./types";
+
+export const useGameValues = () => {
     const canvas = ref<HTMLCanvasElement>()
     const ctx = ref<CanvasRenderingContext2D>()
 
@@ -76,6 +78,8 @@ const useGame = () => {
         height: 24,
         x: 10,
         y: 50,
+        velocity: 0,
+        gravity: 0.25,
 
         draw: () => {
             if (!ctx.value) return;
@@ -87,6 +91,31 @@ const useGame = () => {
                 flappyBird.x, flappyBird.y, // Posicionamento no canvas
                 flappyBird.width, flappyBird.height // Tamanho no canvas
             )
+        },
+
+        update: () => {
+            flappyBird.velocity += flappyBird.gravity
+            flappyBird.y += flappyBird.velocity
+        }
+    })
+
+    const readyMessage = reactive({
+        sy: 0,
+        sx: 134,
+        width: 174,
+        height: 152,
+        x: 0,
+        y: 50,
+        draw: () => {
+            if (!ctx.value) return;
+
+            ctx.value.drawImage(
+                sprites.value,
+                readyMessage.sx, readyMessage.sy, // coordenadas referente aonde se localiza
+                readyMessage.width, readyMessage.height, // Tamanho do recorte do sprite
+                readyMessage.x, readyMessage.y, // Posicionamento no canvas
+                readyMessage.width, readyMessage.height // Tamanho no canvas
+            )
         }
     })
 
@@ -95,8 +124,41 @@ const useGame = () => {
         canvas,
         ctx,
         flappyBird,
-        floor
+        floor,
+        readyMessage
     }
 }
 
-export default useGame;
+export const useScreens = () => {
+    const setHome = (action: 'draw' | 'update', readyMessage: Sprite) => {
+        if (action === 'draw') {
+            readyMessage.draw()
+        }
+    }
+    
+
+    const setGame = (
+        action: 'draw' | 'update',
+        background: Sprite,
+        floor: Sprite,
+        flappyBird: Sprite,
+    ) => {
+        if (action === 'draw') {
+
+            background.draw()
+            floor.draw()
+            flappyBird.draw()
+        }
+    
+
+        if (action === 'update' && flappyBird.update) {    
+            flappyBird.update()
+        }
+        
+    }
+
+    return {
+        setHome,
+        setGame,
+    }
+}
